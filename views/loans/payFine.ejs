@@ -1,0 +1,134 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+          <span class="badge bg-danger text-uppercase px-2 py-1 mb-1">Overdue Fine Required</span>
+          <h2 class="fw-bold text-navy mb-0">Library Fine Payment</h2>
+        </div>
+        <a href="/loans/my" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Back to My Loans
+        </a>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+          <span class="fw-bold text-navy">
+            <i class="bi bi-receipt me-2 text-primary"></i>Overdue Book Details
+          </span>
+          <span class="badge badge-overdue">
+            <%= calc.overdueDays %> Day<%= calc.overdueDays > 1 ? 's' : '' %> Overdue
+          </span>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex gap-4 align-items-start mb-4">
+            <div style="width: 100px; flex-shrink: 0;">
+              <div class="book-cover-detail-wrap shadow-sm">
+                <img
+                  src="<%= book ? book.coverImage : '/images/default-book-cover.png' %>"
+                  alt="<%= book ? book.title : 'Book Cover' %>"
+                  class="rounded"
+                  onerror="this.onerror=null;this.src='/images/default-book-cover.png';"
+                >
+              </div>
+            </div>
+
+            <div class="flex-grow-1">
+              <h4 class="fw-bold text-navy mb-1"><%= book ? book.title : 'Unknown Title' %></h4>
+              <p class="text-muted mb-2">By <%= book ? book.author : 'Unknown Author' %> &bull; <%= book ? book.category : '' %></p>
+              
+              <div class="table-responsive">
+                <table class="table table-sm table-borderless mb-0 small">
+                  <tbody>
+                    <tr>
+                      <td class="text-muted ps-0" style="width: 130px;">Borrowed On:</td>
+                      <td class="fw-semibold"><%= new Date(loan.issueDate).toLocaleDateString('en-GB') %></td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted ps-0">Due Date:</td>
+                      <td class="text-danger fw-semibold"><%= new Date(loan.dueDate).toLocaleDateString('en-GB') %></td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted ps-0">Late Penalty Rate:</td>
+                      <td class="fw-semibold">₹5 per overdue day</td>
+                    </tr>
+                    <tr>
+                      <td class="text-muted ps-0">Calculation:</td>
+                      <td class="fw-bold text-navy"><%= calc.overdueDays %> days &times; ₹5 = ₹<%= calc.fine %></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Mock Payment Form -->
+          <form action="/loans/<%= loan._id %>/pay" method="POST">
+            <h5 class="fw-bold text-navy mb-3">
+              <i class="bi bi-wallet2 me-2 text-primary"></i>Select Payment Method
+            </h5>
+
+            <div class="row g-3 mb-4">
+              <!-- UPI Option -->
+              <div class="col-md-4">
+                <label class="d-block border rounded-3 p-3 text-center cursor-pointer h-100 bg-body-tertiary">
+                  <input type="radio" name="paymentMethod" value="UPI" checked class="form-check-input mb-2">
+                  <div class="fw-bold"><i class="bi bi-qr-code-scan text-success fs-4 d-block mb-1"></i> UPI / QR</div>
+                  <small class="text-muted">Instant PhonePe / GPay</small>
+                </label>
+              </div>
+
+              <!-- Card Option -->
+              <div class="col-md-4">
+                <label class="d-block border rounded-3 p-3 text-center cursor-pointer h-100 bg-body-tertiary">
+                  <input type="radio" name="paymentMethod" value="Card" class="form-check-input mb-2">
+                  <div class="fw-bold"><i class="bi bi-credit-card text-primary fs-4 d-block mb-1"></i> Debit / Credit</div>
+                  <small class="text-muted">Visa, Mastercard, RuPay</small>
+                </label>
+              </div>
+
+              <!-- Cash Option -->
+              <div class="col-md-4">
+                <label class="d-block border rounded-3 p-3 text-center cursor-pointer h-100 bg-body-tertiary">
+                  <input type="radio" name="paymentMethod" value="Cash" class="form-check-input mb-2">
+                  <div class="fw-bold"><i class="bi bi-cash-stack text-warning fs-4 d-block mb-1"></i> Cash Desk</div>
+                  <small class="text-muted">Pay at Circulation Desk</small>
+                </label>
+              </div>
+            </div>
+
+            <!-- Total Checkout Banner -->
+            <div class="p-3 bg-light border rounded-3 d-flex align-items-center justify-content-between mb-4">
+              <div>
+                <span class="text-muted d-block small">Total Fine Payable:</span>
+                <span class="fs-3 fw-bold text-navy">₹<%= calc.fine %></span>
+              </div>
+              <div class="text-end text-muted small">
+                <i class="bi bi-shield-lock-fill text-success me-1"></i> Verified Mock Checkout
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-library-primary py-3 fs-5 fw-bold shadow-sm">
+                <i class="bi bi-check-circle-fill me-2"></i> Pay ₹<%= calc.fine %>
+              </button>
+              <a href="/loans/my" class="btn btn-outline-secondary">
+                Cancel & Pay Later
+              </a>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer bg-light py-3 border-top text-center text-muted small">
+          <i class="bi bi-info-circle me-1"></i>
+          After successful payment, the fine will be recorded in your payment history and you can immediately return the book.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

@@ -89,10 +89,11 @@
           <div class="book-card">
             <div class="book-cover-wrap">
               <img
-                src="<%= book.coverImage || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=600&q=80' %>"
+                src="<%= book.coverImage || '/images/default-book-cover.png' %>"
                 alt="<%= book.title %>"
                 class="book-cover-img"
                 loading="lazy"
+                onerror="this.onerror=null;this.src='/images/default-book-cover.png';"
               >
               <span class="book-category-badge"><%= book.category %></span>
             </div>

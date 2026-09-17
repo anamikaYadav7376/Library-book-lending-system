@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Book = require('./models/Book');
 const Loan = require('./models/Loan');
+const Payment = require('./models/Payment');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/library_management';
 
@@ -15,7 +16,8 @@ const seedDatabase = async () => {
     await Promise.all([
       User.deleteMany({}),
       Book.deleteMany({}),
-      Loan.deleteMany({})
+      Loan.deleteMany({}),
+      Payment.deleteMany({})
     ]);
 
     console.log('Creating Librarian and 5 Member accounts...');
@@ -46,8 +48,8 @@ const seedDatabase = async () => {
     }
     console.log(`Created 1 librarian and ${members.length} members.`);
 
-    // 3. Books Catalogue (16 realistic books across 6 categories)
-    console.log('Populating book catalogue...');
+    // 3. Books Catalogue (16 realistic books across 6 categories with reliable, tested cover URLs)
+    console.log('Populating book catalogue with verified cover art...');
     const booksData = [
       // Computer Science
       {
@@ -225,11 +227,13 @@ const seedDatabase = async () => {
     const savedBooks = await Book.insertMany(booksData);
     console.log(`Inserted ${savedBooks.length} books into database.`);
 
-    // 4. Initial Sample Loans to demonstrate:
-    // - Active on-time loan
-    // - Overdue loan with calculated fine
-    // - Past returned loans (so "Most Borrowed Books" has dynamic aggregation rankings)
-    console.log('Seeding initial loan activity & fine demonstrations...');
+    // 4. Seeding Loans & Payments to demonstrate:
+    // - Anamika: 1 active on-time loan
+    // - Anamika: 1 active OVERDUE loan with UNPAID fine (₹25) -> return is blocked until paid
+    // - Anamika: 1 active OVERDUE loan with PAID fine (₹30) -> finePaid: true, Payment record LIB-ANM4910 exists -> return is unlocked
+    // - Aarav: 1 returned late loan with settled payment
+    // - Priya: 1 returned on-time loan (no fine)
+    console.log('Seeding loan circulation and payment history records...');
     const now = new Date();
     const dayMs = 24 * 60 * 60 * 1000;
 
@@ -250,92 +254,113 @@ const seedDatabase = async () => {
       issueDate: new Date(now.getTime() - 3 * dayMs),
       dueDate: new Date(now.getTime() + 11 * dayMs),
       status: 'issued',
-      fine: 0
+      fine: 0,
+      finePaid: false
     });
     cleanCode.availableCopies -= 1;
     await cleanCode.save();
     await loan1.save();
 
-    // Loan 2: Anamika OVERDUE loan (issued 19 days ago, due 5 days ago -> 5 days overdue -> ₹25 fine)
+    // Loan 2: Anamika OVERDUE loan with UNPAID fine (issued 19 days ago, due 5 days ago -> 5 days overdue -> ₹25 unpaid fine)
     const loan2 = new Loan({
       user: anamika._id,
       book: dataIntensive._id,
       issueDate: new Date(now.getTime() - 19 * dayMs),
       dueDate: new Date(now.getTime() - 5 * dayMs),
       status: 'overdue',
-      fine: 25 // ₹5 * 5 days
+      fine: 25,
+      finePaid: false
     });
     dataIntensive.availableCopies -= 1;
     await dataIntensive.save();
     await loan2.save();
 
-    // Loan 3: Aarav active loan
-    const loan3 = new Loan({
-      user: aarav._id,
-      book: cleanCode._id,
-      issueDate: new Date(now.getTime() - 5 * dayMs),
-      dueDate: new Date(now.getTime() + 9 * dayMs),
-      status: 'issued',
-      fine: 0
+    // Loan 3: Anamika OVERDUE loan with PAID fine (issued 20 days ago, due 6 days ago -> ₹30 fine, PAID via mock UPI)
+    const paymentAnamika = new Payment({
+      user: anamika._id,
+      amount: 30,
+      paymentMethod: 'UPI',
+      status: 'paid',
+      transactionId: 'LIB-ANM4910',
+      paymentDate: new Date(now.getTime() - 1 * dayMs)
     });
-    cleanCode.availableCopies -= 1;
-    await cleanCode.save();
+
+    const loan3 = new Loan({
+      user: anamika._id,
+      book: linearAlgebra._id,
+      issueDate: new Date(now.getTime() - 20 * dayMs),
+      dueDate: new Date(now.getTime() - 6 * dayMs),
+      status: 'overdue',
+      fine: 30,
+      finePaid: true,
+      payment: paymentAnamika._id
+    });
+    linearAlgebra.availableCopies -= 1;
+    await linearAlgebra.save();
     await loan3.save();
 
-    // Loan 4: Priya returned on-time loan for Clean Code (Clean Code now has 3 total loans!)
+    paymentAnamika.loan = loan3._id;
+    await paymentAnamika.save();
+
+    // Loan 4: Aarav past returned late loan with paid fine (3 days overdue -> ₹15 paid)
+    const paymentAarav = new Payment({
+      user: aarav._id,
+      amount: 15,
+      paymentMethod: 'Card',
+      status: 'paid',
+      transactionId: 'LIB-ARV9823',
+      paymentDate: new Date(now.getTime() - 18 * dayMs)
+    });
+
     const loan4 = new Loan({
-      user: priya._id,
-      book: cleanCode._id,
-      issueDate: new Date(now.getTime() - 25 * dayMs),
-      dueDate: new Date(now.getTime() - 11 * dayMs),
-      returnDate: new Date(now.getTime() - 12 * dayMs),
-      status: 'returned',
-      fine: 0
-    });
-    await loan4.save();
-
-    // Loan 5: Anamika returned on-time loan for Atomic Habits
-    const loan5 = new Loan({
-      user: anamika._id,
-      book: atomicHabits._id,
-      issueDate: new Date(now.getTime() - 40 * dayMs),
-      dueDate: new Date(now.getTime() - 26 * dayMs),
-      returnDate: new Date(now.getTime() - 27 * dayMs),
-      status: 'returned',
-      fine: 0
-    });
-    await loan5.save();
-
-    // Loan 6: Aarav returned late loan for Atomic Habits (3 days overdue -> ₹15 fine paid)
-    const loan6 = new Loan({
       user: aarav._id,
       book: atomicHabits._id,
       issueDate: new Date(now.getTime() - 35 * dayMs),
       dueDate: new Date(now.getTime() - 21 * dayMs),
       returnDate: new Date(now.getTime() - 18 * dayMs),
       status: 'returned',
-      fine: 15
+      fine: 15,
+      finePaid: true,
+      payment: paymentAarav._id
     });
-    await loan6.save();
+    await loan4.save();
 
-    // Loan 7: Priya active loan for Sapiens
-    const loan7 = new Loan({
+    paymentAarav.loan = loan4._id;
+    await paymentAarav.save();
+
+    // Loan 5: Priya returned on-time loan for Clean Code (no fine)
+    const loan5 = new Loan({
+      user: priya._id,
+      book: cleanCode._id,
+      issueDate: new Date(now.getTime() - 25 * dayMs),
+      dueDate: new Date(now.getTime() - 11 * dayMs),
+      returnDate: new Date(now.getTime() - 12 * dayMs),
+      status: 'returned',
+      fine: 0,
+      finePaid: false
+    });
+    await loan5.save();
+
+    // Loan 6: Priya active on-time loan for Sapiens
+    const loan6 = new Loan({
       user: priya._id,
       book: sapiens._id,
       issueDate: new Date(now.getTime() - 2 * dayMs),
       dueDate: new Date(now.getTime() + 12 * dayMs),
       status: 'issued',
-      fine: 0
+      fine: 0,
+      finePaid: false
     });
     sapiens.availableCopies -= 1;
     await sapiens.save();
-    await loan7.save();
+    await loan6.save();
 
-    console.log('Database seeded successfully!');
-    console.log('--------------------------------------------------');
-    console.log('Librarian: admin@library.com | Password: Admin@123');
+    console.log('Database seeded successfully with loans and payments!');
+    console.log('------------------------------------------------------------------');
+    console.log('Librarian: admin@library.com   | Password: Admin@123');
     console.log('Member:    anamika@library.com | Password: Member@123');
-    console.log('--------------------------------------------------');
+    console.log('           (Has 1 active loan, 1 overdue unpaid, 1 overdue paid)');
+    console.log('------------------------------------------------------------------');
 
     await mongoose.connection.close();
     process.exit(0);

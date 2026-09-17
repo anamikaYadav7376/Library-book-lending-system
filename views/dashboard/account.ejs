@@ -1,0 +1,192 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-4 border-bottom">
+    <div>
+      <span class="badge bg-primary text-uppercase px-2 py-1 mb-1">Member Profile</span>
+      <h2 class="fw-bold text-navy mb-0">My Account & Financial Summary</h2>
+      <p class="text-muted small mb-0">View your member credentials, borrowing metrics, and recorded payment history</p>
+    </div>
+    <div class="mt-3 mt-md-0">
+      <a href="/loans/my" class="btn btn-library-primary">
+        <i class="bi bi-book-half me-1"></i> My Active Loans
+      </a>
+      <a href="/books" class="btn btn-outline-secondary ms-2">
+        <i class="bi bi-grid me-1"></i> Book Catalogue
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <!-- Profile Card -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-3 h-100">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+          <h5 class="fw-bold mb-0 text-navy">
+            <i class="bi bi-person-circle me-2 text-primary"></i>Member Profile
+          </h5>
+          <span class="badge bg-light text-dark border text-uppercase"><%= user.role %></span>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-3 shadow-sm" style="width: 64px; height: 64px;">
+              <%= user.name.charAt(0).toUpperCase() %>
+            </div>
+            <div>
+              <h4 class="fw-bold text-navy mb-0"><%= user.name %></h4>
+              <span class="text-muted small"><%= user.email %></span>
+            </div>
+          </div>
+
+          <table class="table table-borderless table-sm mb-0">
+            <tbody>
+              <tr>
+                <td class="text-muted" style="width: 140px;">Membership Status:</td>
+                <td><span class="badge bg-success">Active &bull; Good Standing</span></td>
+              </tr>
+              <tr>
+                <td class="text-muted">Registered Email:</td>
+                <td><code class="text-dark"><%= user.email %></code></td>
+              </tr>
+              <tr>
+                <td class="text-muted">Member Since:</td>
+                <td><%= new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+              </tr>
+              <tr>
+                <td class="text-muted">Max Active Quota:</td>
+                <td><strong>5 books</strong> simultaneously</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fine Summary & Borrowing Overview -->
+    <div class="col-lg-7">
+      <div class="row g-3 h-100">
+        <!-- Currently Borrowed -->
+        <div class="col-sm-6">
+          <div class="stat-card h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="stat-label">Currently Borrowed</span>
+              <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-book"></i>
+              </div>
+            </div>
+            <div class="stat-number"><%= borrowingStats.currentlyBorrowed %> <span class="fs-6 text-muted fw-normal">/ 5 max</span></div>
+            <small class="text-muted">Active loans in circulation</small>
+          </div>
+        </div>
+
+        <!-- Overdue -->
+        <div class="col-sm-6">
+          <div class="stat-card h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="stat-label">Overdue Books</span>
+              <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                <i class="bi bi-clock-history"></i>
+              </div>
+            </div>
+            <div class="stat-number text-danger"><%= borrowingStats.overdueCount %></div>
+            <small class="text-muted">Require return or renewal</small>
+          </div>
+        </div>
+
+        <!-- Outstanding Fines -->
+        <div class="col-sm-4">
+          <div class="stat-card h-100 border-danger">
+            <div class="stat-label text-danger">Outstanding Fines</div>
+            <div class="stat-number text-danger mt-2">₹<%= fineSummary.outstandingFines %></div>
+            <small class="text-muted">Pending overdue penalties</small>
+          </div>
+        </div>
+
+        <!-- Paid Fines -->
+        <div class="col-sm-4">
+          <div class="stat-card h-100 border-success">
+            <div class="stat-label text-success">Paid Fines</div>
+            <div class="stat-number text-success mt-2">₹<%= fineSummary.paidFines %></div>
+            <small class="text-muted">Settled fine payments</small>
+          </div>
+        </div>
+
+        <!-- Total Fines -->
+        <div class="col-sm-4">
+          <div class="stat-card h-100 border-warning">
+            <div class="stat-label text-warning">Total Fines</div>
+            <div class="stat-number text-warning mt-2">₹<%= fineSummary.totalFines %></div>
+            <small class="text-muted">Lifetime fine assessments</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment History Table Card -->
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+      <h5 class="fw-bold mb-0 text-navy">
+        <i class="bi bi-credit-card me-2 text-primary"></i>Fine Payment History
+      </h5>
+      <span class="badge bg-secondary"><%= payments.length %> Payment Record<%= payments.length !== 1 ? 's' : '' %></span>
+    </div>
+    <div class="card-body p-0">
+      <% if (payments.length === 0) { %>
+        <div class="p-5 text-center text-muted">
+          <i class="bi bi-receipt display-4 text-secondary mb-3 d-block"></i>
+          <h5>No payment history yet</h5>
+          <p class="mb-0">You have no recorded fine payments or penalties on file.</p>
+        </div>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 table-library">
+            <thead>
+              <tr>
+                <th scope="col">Payment Date</th>
+                <th scope="col">Book Information</th>
+                <th scope="col">Fine Assessed</th>
+                <th scope="col">Amount Paid</th>
+                <th scope="col">Method</th>
+                <th scope="col">Transaction ID</th>
+                <th scope="col" class="text-end">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% payments.forEach(function(payment) { %>
+                <tr>
+                  <td>
+                    <%= new Date(payment.paymentDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                  </td>
+                  <td>
+                    <% if (payment.loan && payment.loan.book) { %>
+                      <div class="fw-bold text-navy"><%= payment.loan.book.title %></div>
+                      <small class="text-muted">By <%= payment.loan.book.author %></small>
+                    <% } else { %>
+                      <span class="text-muted">Archived Loan / Title</span>
+                    <% } %>
+                  </td>
+                  <td>₹<%= payment.amount %></td>
+                  <td><strong class="text-success">₹<%= payment.amount %></strong></td>
+                  <td>
+                    <span class="badge bg-light text-dark border">
+                      <i class="bi bi-wallet2 me-1"></i> <%= payment.paymentMethod %>
+                    </span>
+                  </td>
+                  <td><code><%= payment.transactionId %></code></td>
+                  <td class="text-end">
+                    <span class="badge bg-success text-uppercase">
+                      <i class="bi bi-check-circle me-1"></i> <%= payment.status %>
+                    </span>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

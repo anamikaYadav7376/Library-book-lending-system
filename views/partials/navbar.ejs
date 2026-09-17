@@ -5,6 +5,13 @@
       <span>Athenaeum Library</span>
     </a>
 
+    <!-- Theme Toggle (Visible on Mobile & Desktop) -->
+    <div class="d-flex align-items-center d-lg-none ms-auto me-2">
+      <button id="themeToggleMobile" class="theme-toggle-btn" type="button" onclick="document.getElementById('themeToggle').click()" aria-label="Toggle theme">
+        <i class="bi bi-circle-half"></i>
+      </button>
+    </div>
+
     <button
       class="navbar-toggler"
       type="button"
@@ -38,6 +45,11 @@
                 <i class="bi bi-book-half me-1"></i> My Loans
               </a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link <%= currentPath === '/account' ? 'active' : '' %>" href="/account">
+                <i class="bi bi-person-badge-fill me-1"></i> Account
+              </a>
+            </li>
           <% } %>
 
           <% if (isLibrarian) { %>
@@ -52,6 +64,11 @@
               </a>
             </li>
             <li class="nav-item">
+              <a class="nav-link <%= currentPath === '/loans/payments' ? 'active' : '' %>" href="/loans/payments">
+                <i class="bi bi-cash-coin me-1"></i> All Payments
+              </a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link <%= currentPath === '/members' ? 'active' : '' %>" href="/members">
                 <i class="bi bi-people-fill me-1"></i> Members
               </a>
@@ -61,6 +78,14 @@
       </ul>
 
       <ul class="navbar-nav ms-auto align-items-lg-center">
+        <!-- Theme Switcher Desktop -->
+        <li class="nav-item me-lg-2">
+          <button id="themeToggle" class="theme-toggle-btn" type="button" aria-label="Toggle theme">
+            <i class="bi bi-moon-stars-fill text-light"></i>
+            <span class="d-none d-sm-inline">Dark</span>
+          </button>
+        </li>
+
         <% if (!isAuthenticated) { %>
           <li class="nav-item">
             <a class="nav-link <%= currentPath === '/auth/login' ? 'active' : '' %>" href="/auth/login">
@@ -94,12 +119,31 @@
               <li><hr class="dropdown-divider"></li>
               <li>
                 <a class="dropdown-item" href="/dashboard">
-                  <i class="bi bi-person-circle me-2"></i> My Dashboard
+                  <i class="bi bi-speedometer2 me-2"></i> My Dashboard
                 </a>
               </li>
+              <% if (isMember) { %>
+                <li>
+                  <a class="dropdown-item" href="/account">
+                    <i class="bi bi-person-badge me-2"></i> My Account & Fines
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/loans/my">
+                    <i class="bi bi-book-half me-2"></i> My Loans
+                  </a>
+                </li>
+              <% } %>
+              <% if (isLibrarian) { %>
+                <li>
+                  <a class="dropdown-item" href="/loans/payments">
+                    <i class="bi bi-cash-stack me-2"></i> Payments & Fines
+                  </a>
+                </li>
+              <% } %>
               <li>
                 <a class="dropdown-item" href="/books">
-                  <i class="bi bi-book me-2"></i> Browse Books
+                  <i class="bi bi-book me-2"></i> Browse Catalogue
                 </a>
               </li>
               <li><hr class="dropdown-divider"></li>

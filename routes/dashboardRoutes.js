@@ -15,6 +15,9 @@ router.get('/', (req, res) => {
 // Dashboard route (role-aware)
 router.get('/dashboard', requireAuth, dashboardController.getDashboard);
 
+// Member Account Page
+router.get('/account', requireAuth, dashboardController.getAccountPage);
+
 // Members directory (Librarian only)
 router.get('/members', requireAuth, requireRole('librarian'), dashboardController.getMembersList);
 

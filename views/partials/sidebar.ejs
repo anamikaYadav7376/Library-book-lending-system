@@ -34,6 +34,12 @@
       </a>
     </li>
     <li class="nav-item">
+      <a class="nav-link <%= currentPath === '/loans/payments' ? 'active' : '' %>" href="/loans/payments">
+        <i class="bi bi-cash-coin"></i>
+        <span>Payments & Fines</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link <%= currentPath === '/members' ? 'active' : '' %>" href="/members">
         <i class="bi bi-people"></i>
         <span>Member Management</span>
@@ -44,6 +50,6 @@
   <div class="sidebar-heading mt-4">System Info</div>
   <div class="px-2 py-2 text-secondary small">
     <p class="mb-1"><i class="bi bi-hdd-network me-1"></i> Mode: <%= process.env.NODE_ENV || 'production' %></p>
-    <p class="mb-0"><i class="bi bi-clock-history me-1"></i> Loan Period: 14 Days</p>
+    <p class="mb-0"><i class="bi bi-clock-history me-1"></i> Fine Rate: ₹5 / day</p>
   </div>
 </div>

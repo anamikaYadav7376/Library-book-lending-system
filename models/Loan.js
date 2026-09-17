@@ -31,6 +31,14 @@ const loanSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: [0, 'Fine cannot be negative']
+  },
+  finePaid: {
+    type: Boolean,
+    default: false
+  },
+  payment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Payment'
   }
 });
 
@@ -41,21 +49,19 @@ loanSchema.methods.getCalculatedStatusAndFine = function () {
   const FINE_PER_DAY = 5;
 
   if (this.status === 'returned') {
+    let overdueDays = 0;
     if (this.returnDate && new Date(this.returnDate) > dueDate) {
       const diffMs = new Date(this.returnDate) - dueDate;
-      const overdueDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      return {
-        status: 'returned',
-        overdueDays: Math.max(0, overdueDays),
-        fine: Math.max(0, overdueDays * FINE_PER_DAY),
-        isOverdue: false
-      };
+      overdueDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
     }
+    const finalFine = this.fine || (overdueDays > 0 ? overdueDays * FINE_PER_DAY : 0);
     return {
       status: 'returned',
-      overdueDays: 0,
-      fine: this.fine || 0,
-      isOverdue: false
+      overdueDays: Math.max(0, overdueDays),
+      fine: finalFine,
+      finePaid: finalFine > 0 ? true : false,
+      isOverdue: false,
+      paymentPending: false
     };
   }
 
@@ -64,11 +70,15 @@ loanSchema.methods.getCalculatedStatusAndFine = function () {
     const diffMs = now - dueDate;
     const overdueDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
     const calculatedFine = overdueDays * FINE_PER_DAY;
+    const isPaid = !!this.finePaid;
+
     return {
       status: 'overdue',
       overdueDays,
-      fine: calculatedFine,
-      isOverdue: true
+      fine: isPaid && this.fine ? this.fine : calculatedFine,
+      finePaid: isPaid,
+      isOverdue: true,
+      paymentPending: !isPaid && calculatedFine > 0
     };
   }
 
@@ -76,7 +86,9 @@ loanSchema.methods.getCalculatedStatusAndFine = function () {
     status: this.status,
     overdueDays: 0,
     fine: 0,
-    isOverdue: false
+    finePaid: false,
+    isOverdue: false,
+    paymentPending: false
   };
 };
 
