@@ -1,0 +1,132 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+          <span class="badge bg-danger text-uppercase px-2 py-1 mb-1">Librarian Operations</span>
+          <h2 class="fw-bold text-navy mb-0">Add New Title to Catalogue</h2>
+        </div>
+        <a href="/books" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Back to Catalogue
+        </a>
+      </div>
+
+      <div class="form-card">
+        <form action="/books" method="POST">
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label for="title" class="form-label">Book Title <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                value="<%= typeof formData !== 'undefined' && formData.title ? formData.title : '' %>"
+                placeholder="e.g. Clean Architecture"
+                required
+              >
+            </div>
+
+            <div class="col-md-6">
+              <label for="author" class="form-label">Author Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                id="author"
+                name="author"
+                value="<%= typeof formData !== 'undefined' && formData.author ? formData.author : '' %>"
+                placeholder="e.g. Robert C. Martin"
+                required
+              >
+            </div>
+
+            <div class="col-md-6">
+              <label for="isbn" class="form-label">ISBN Identification <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                id="isbn"
+                name="isbn"
+                value="<%= typeof formData !== 'undefined' && formData.isbn ? formData.isbn : '' %>"
+                placeholder="e.g. 978-0134494166"
+                required
+              >
+            </div>
+
+            <div class="col-md-6">
+              <label for="category" class="form-label">Subject / Category <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                id="category"
+                name="category"
+                value="<%= typeof formData !== 'undefined' && formData.category ? formData.category : '' %>"
+                placeholder="e.g. Computer Science"
+                required
+                list="categorySuggestions"
+              >
+              <datalist id="categorySuggestions">
+                <option value="Computer Science">
+                <option value="Mathematics">
+                <option value="Physics">
+                <option value="Literature">
+                <option value="History">
+                <option value="Self Development">
+                <option value="Economics">
+                <option value="Philosophy">
+              </datalist>
+            </div>
+
+            <div class="col-md-6">
+              <label for="totalCopies" class="form-label">Total Initial Copies <span class="text-danger">*</span></label>
+              <input
+                type="number"
+                class="form-control"
+                id="totalCopies"
+                name="totalCopies"
+                min="1"
+                value="<%= typeof formData !== 'undefined' && formData.totalCopies ? formData.totalCopies : '5' %>"
+                required
+              >
+              <div class="form-text">Available copies will automatically be set equal to total copies.</div>
+            </div>
+
+            <div class="col-md-12">
+              <label for="coverImage" class="form-label">Cover Image URL</label>
+              <input
+                type="url"
+                class="form-control"
+                id="coverImage"
+                name="coverImage"
+                value="<%= typeof formData !== 'undefined' && formData.coverImage ? formData.coverImage : '' %>"
+                placeholder="https://example.com/cover.jpg (Leave blank for default cover)"
+              >
+            </div>
+
+            <div class="col-md-12">
+              <label for="description" class="form-label">Overview / Abstract</label>
+              <textarea
+                class="form-control"
+                id="description"
+                name="description"
+                rows="4"
+                placeholder="Enter a brief summary of the book content, prerequisites, or topics covered..."
+              ><%= typeof formData !== 'undefined' && formData.description ? formData.description : '' %></textarea>
+            </div>
+
+            <div class="col-md-12 pt-3 border-top d-flex justify-content-end gap-2">
+              <a href="/books" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-library-primary">
+                <i class="bi bi-plus-lg me-1"></i> Add Book to Catalogue
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

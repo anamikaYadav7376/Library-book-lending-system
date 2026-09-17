@@ -1,0 +1,283 @@
+<%- include('../layouts/header') %>
+
+<div class="container-fluid px-0">
+  <div class="row g-0">
+    <!-- Admin Sidebar -->
+    <div class="col-lg-2 d-none d-lg-block">
+      <%- include('../partials/sidebar') %>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="col-lg-10 p-4">
+      <!-- Top Title & Quick Actions -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-4 border-bottom">
+        <div>
+          <span class="badge bg-danger text-uppercase px-2 py-1 mb-1">Administrative Console</span>
+          <h2 class="fw-bold text-navy mb-0">Library Operations & Statistics</h2>
+          <p class="text-muted small mb-0">Live aggregated metrics from MongoDB Atlas database</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+          <a href="/books/new" class="btn btn-library-primary">
+            <i class="bi bi-plus-circle me-1"></i> Add New Book
+          </a>
+          <a href="/loans" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-right me-1"></i> View All Loans
+          </a>
+          <a href="/members" class="btn btn-outline-secondary">
+            <i class="bi bi-people me-1"></i> Members
+          </a>
+        </div>
+      </div>
+
+      <!-- 6 Metrics Cards Grid -->
+      <div class="row g-3 mb-4">
+        <!-- Total Titles -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-label">Total Titles</div>
+            <div class="d-flex align-items-center justify-content-between mt-2">
+              <div class="stat-number"><%= stats.totalBooks %></div>
+              <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-journal-album"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Copies -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-label">Total Copies</div>
+            <div class="d-flex align-items-center justify-content-between mt-2">
+              <div class="stat-number"><%= stats.totalCopies %></div>
+              <div class="stat-icon-wrapper bg-info bg-opacity-10 text-info">
+                <i class="bi bi-stack"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Available Copies -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-label">Available Copies</div>
+            <div class="d-flex align-items-center justify-content-between mt-2">
+              <div class="stat-number text-success"><%= stats.availableCopies %></div>
+              <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success">
+                <i class="bi bi-check2-square"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Issued Books -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-label">Issued Books</div>
+            <div class="d-flex align-items-center justify-content-between mt-2">
+              <div class="stat-number text-primary"><%= stats.issuedBooks %></div>
+              <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-arrow-up-right-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overdue Books -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-label">Overdue Books</div>
+            <div class="d-flex align-items-center justify-content-between mt-2">
+              <div class="stat-number text-danger"><%= stats.overdueBooks %></div>
+              <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                <i class="bi bi-exclamation-triangle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Members -->
+        <div class="col-6 col-md-4 col-xl-2">
+          <div class="stat-card">
+            <div class="stat-label">Total Members</div>
+            <div class="d-flex align-items-center justify-content-between mt-2">
+              <div class="stat-number text-dark"><%= stats.totalMembers %></div>
+              <div class="stat-icon-wrapper bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-people"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Row: Most Borrowed Titles & Activity Feeds -->
+      <div class="row g-4">
+        <!-- Most Borrowed Books Ranking -->
+        <div class="col-xl-5">
+          <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold mb-0 text-navy">
+                <i class="bi bi-trophy-fill text-warning me-2"></i>Most Borrowed Titles
+              </h5>
+              <span class="badge bg-light text-secondary border">Top Circulation</span>
+            </div>
+            <div class="card-body p-0">
+              <% if (mostBorrowedTitles.length === 0) { %>
+                <div class="p-4 text-center text-muted">
+                  No circulation data recorded yet.
+                </div>
+              <% } else { %>
+                <div class="list-group list-group-flush">
+                  <% mostBorrowedTitles.forEach(function(item, idx) { %>
+                    <div class="list-group-item d-flex align-items-center justify-content-between py-3 px-3">
+                      <div class="d-flex align-items-center gap-3">
+                        <span class="badge rounded-circle <%= idx === 0 ? 'bg-warning text-dark' : (idx === 1 ? 'bg-secondary text-white' : (idx === 2 ? 'bg-dark text-white' : 'bg-light text-secondary border')) %> px-2 py-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                          <%= idx + 1 %>
+                        </span>
+                        <div>
+                          <a href="/books/<%= item.bookDetails._id %>" class="fw-bold text-navy text-decoration-none">
+                            <%= item.bookDetails.title %>
+                          </a>
+                          <div class="small text-muted">
+                            <%= item.bookDetails.author %> &bull; <span class="badge bg-light text-dark border"><%= item.bookDetails.category %></span>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">
+                        <%= item.loanCount %> loan<%= item.loanCount > 1 ? 's' : '' %>
+                      </span>
+                    </div>
+                  <% }); %>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feeds -->
+        <div class="col-xl-7">
+          <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+              <ul class="nav nav-tabs card-header-tabs" id="activityTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active fw-semibold" id="issues-tab" data-bs-toggle="tab" data-bs-target="#recent-issues" type="button" role="tab">
+                    <i class="bi bi-arrow-up-right me-1 text-primary"></i> Recent Issues (<%= recentActivity.recentIssues.length %>)
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link fw-semibold" id="returns-tab" data-bs-toggle="tab" data-bs-target="#recent-returns" type="button" role="tab">
+                    <i class="bi bi-arrow-down-left me-1 text-success"></i> Recent Returns (<%= recentActivity.recentReturns.length %>)
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link fw-semibold" id="members-tab" data-bs-toggle="tab" data-bs-target="#recent-members" type="button" role="tab">
+                    <i class="bi bi-person-plus me-1 text-secondary"></i> New Registrations
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div class="card-body p-0">
+              <div class="tab-content" id="activityTabContent">
+                <!-- Recent Issues Tab -->
+                <div class="tab-pane fade show active" id="recent-issues" role="tabpanel">
+                  <% if (recentActivity.recentIssues.length === 0) { %>
+                    <div class="p-4 text-center text-muted small">No recent issues found.</div>
+                  <% } else { %>
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col">Book</th>
+                            <th scope="col">Member</th>
+                            <th scope="col">Issued On</th>
+                            <th scope="col">Due Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% recentActivity.recentIssues.forEach(function(l) { %>
+                            <tr>
+                              <td class="fw-semibold text-navy"><%= l.book ? l.book.title : 'Deleted book' %></td>
+                              <td><%= l.user ? l.user.name : 'Unknown' %></td>
+                              <td><%= new Date(l.issueDate).toLocaleDateString('en-GB') %></td>
+                              <td><%= new Date(l.dueDate).toLocaleDateString('en-GB') %></td>
+                            </tr>
+                          <% }); %>
+                        </tbody>
+                      </table>
+                    </div>
+                  <% } %>
+                </div>
+
+                <!-- Recent Returns Tab -->
+                <div class="tab-pane fade" id="recent-returns" role="tabpanel">
+                  <% if (recentActivity.recentReturns.length === 0) { %>
+                    <div class="p-4 text-center text-muted small">No recent returns found.</div>
+                  <% } else { %>
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col">Book</th>
+                            <th scope="col">Member</th>
+                            <th scope="col">Returned On</th>
+                            <th scope="col">Fine</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% recentActivity.recentReturns.forEach(function(l) { %>
+                            <tr>
+                              <td class="fw-semibold text-navy"><%= l.book ? l.book.title : 'Deleted book' %></td>
+                              <td><%= l.user ? l.user.name : 'Unknown' %></td>
+                              <td><%= l.returnDate ? new Date(l.returnDate).toLocaleDateString('en-GB') : '-' %></td>
+                              <td>
+                                <% if (l.fine > 0) { %>
+                                  <span class="fine-badge">₹<%= l.fine %></span>
+                                <% } else { %>
+                                  <span class="text-success small fw-semibold">₹0 (On Time)</span>
+                                <% } %>
+                              </td>
+                            </tr>
+                          <% }); %>
+                        </tbody>
+                      </table>
+                    </div>
+                  <% } %>
+                </div>
+
+                <!-- Recent Members Tab -->
+                <div class="tab-pane fade" id="recent-members" role="tabpanel">
+                  <% if (recentActivity.recentMembers.length === 0) { %>
+                    <div class="p-4 text-center text-muted small">No members registered yet.</div>
+                  <% } else { %>
+                    <div class="table-responsive">
+                      <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col">Member Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Joined On</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% recentActivity.recentMembers.forEach(function(m) { %>
+                            <tr>
+                              <td class="fw-semibold text-navy"><%= m.name %></td>
+                              <td><%= m.email %></td>
+                              <td><%= new Date(m.createdAt).toLocaleDateString('en-GB') %></td>
+                            </tr>
+                          <% }); %>
+                        </tbody>
+                      </table>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

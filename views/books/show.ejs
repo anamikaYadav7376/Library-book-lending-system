@@ -1,0 +1,151 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/books" class="text-decoration-none">Catalogue</a></li>
+      <li class="breadcrumb-item"><a href="/books?category=<%= encodeURIComponent(book.category) %>" class="text-decoration-none"><%= book.category %></a></li>
+      <li class="breadcrumb-item active" aria-current="page"><%= book.title %></li>
+    </ol>
+  </nav>
+
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    <div class="card-body p-4 p-lg-5">
+      <div class="row g-4 g-lg-5 align-items-start">
+        <!-- Book Cover Column -->
+        <div class="col-md-4 col-lg-3 text-center">
+          <div class="book-cover-detail-wrap rounded-3 shadow mb-3 overflow-hidden">
+            <img
+              src="<%= book.coverImage || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=600&q=80' %>"
+              alt="<%= book.title %>"
+              class="img-fluid rounded"
+              style="width: 100%; max-height: 420px; object-fit: cover;"
+            >
+          </div>
+          <span class="badge bg-light text-dark border px-3 py-2 w-100 fs-6">
+            <i class="bi bi-tag-fill me-1 text-primary"></i> <%= book.category %>
+          </span>
+        </div>
+
+        <!-- Book Details Column -->
+        <div class="col-md-8 col-lg-9">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <h2 class="fw-bold text-navy book-title-serif mb-0"><%= book.title %></h2>
+            <% if (book.availableCopies > 0) { %>
+              <span class="badge badge-available fs-6 px-3 py-2">
+                <i class="bi bi-check-circle me-1"></i> Available (<%= book.availableCopies %> in stock)
+              </span>
+            <% } else { %>
+              <span class="badge badge-unavailable fs-6 px-3 py-2">
+                <i class="bi bi-dash-circle me-1"></i> Currently Unavailable (0 copies)
+              </span>
+            <% } %>
+          </div>
+
+          <p class="fs-5 text-muted mb-4">By <span class="fw-semibold text-dark"><%= book.author %></span></p>
+
+          <!-- Book Metadata Table -->
+          <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle">
+              <tbody>
+                <tr>
+                  <th scope="row" class="table-light text-secondary" style="width: 200px;">ISBN Identification</th>
+                  <td><code><%= book.isbn %></code></td>
+                </tr>
+                <tr>
+                  <th scope="row" class="table-light text-secondary">Subject / Category</th>
+                  <td><%= book.category %></td>
+                </tr>
+                <tr>
+                  <th scope="row" class="table-light text-secondary">Total Acquired Copies</th>
+                  <td><strong><%= book.totalCopies %></strong> units in library catalogue</td>
+                </tr>
+                <tr>
+                  <th scope="row" class="table-light text-secondary">Copies Available for Loan</th>
+                  <td>
+                    <span class="<%= book.availableCopies > 0 ? 'text-success fw-bold' : 'text-danger fw-bold' %>">
+                      <%= book.availableCopies %> copies
+                    </span>
+                    <% const issuedCount = book.totalCopies - book.availableCopies; %>
+                    <% if (issuedCount > 0) { %>
+                      <small class="text-muted ms-2">(<%= issuedCount %> currently issued to patrons)</small>
+                    <% } %>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" class="table-light text-secondary">Standard Borrowing Period</th>
+                  <td>14 Days (Overdue fine rate: ₹5 / day)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-navy mb-2"><i class="bi bi-card-text me-2 text-primary"></i>Overview & Abstract</h5>
+            <p class="text-secondary leading-relaxed mb-0">
+              <%= book.description || 'No detailed abstract provided for this library catalog item.' %>
+            </p>
+          </div>
+
+          <!-- Actions Toolbar -->
+          <div class="p-3 bg-light rounded-3 border d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <div>
+              <a href="/books" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Catalogue
+              </a>
+            </div>
+
+            <div class="d-flex gap-2">
+              <% if (isLibrarian) { %>
+                <a href="/books/<%= book._id %>/edit" class="btn btn-warning text-dark fw-semibold">
+                  <i class="bi bi-pencil-square me-1"></i> Edit Details
+                </a>
+                <form
+                  action="/books/<%= book._id %>?_method=DELETE"
+                  method="POST"
+                  class="d-inline confirm-delete-form"
+                  data-book-title="<%= book.title %>"
+                >
+                  <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-trash3 me-1"></i> Delete Book
+                  </button>
+                </form>
+              <% } %>
+
+              <% if (isMember) { %>
+                <% if (hasActiveLoan) { %>
+                  <button class="btn btn-secondary" disabled>
+                    <i class="bi bi-check2-circle me-1"></i> Already Issued to You
+                  </button>
+                  <a href="/loans/my" class="btn btn-outline-primary">View My Loans</a>
+                <% } else if (memberActiveLoanCount >= 5) { %>
+                  <button class="btn btn-secondary" disabled title="Maximum active loans limit reached">
+                    <i class="bi bi-slash-circle me-1"></i> Limit of 5 Books Reached
+                  </button>
+                <% } else if (book.availableCopies > 0) { %>
+                  <form action="/books/<%= book._id %>/issue" method="POST" class="m-0">
+                    <button type="submit" class="btn btn-library-primary px-4">
+                      <i class="bi bi-journal-arrow-down me-1"></i> Request Issue (14 Days)
+                    </button>
+                  </form>
+                <% } else { %>
+                  <button class="btn btn-danger" disabled>
+                    <i class="bi bi-x-circle me-1"></i> Currently Unavailable
+                  </button>
+                <% } %>
+              <% } else if (!isAuthenticated) { %>
+                <a href="/auth/login" class="btn btn-library-primary">
+                  <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Request Issue
+                </a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

@@ -1,0 +1,164 @@
+<%- include('../layouts/header') %>
+
+<div class="container-fluid px-0">
+  <div class="row g-0">
+    <!-- Admin Sidebar -->
+    <div class="col-lg-2 d-none d-lg-block">
+      <%- include('../partials/sidebar') %>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="col-lg-10 p-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-4 border-bottom">
+        <div>
+          <span class="badge bg-danger text-uppercase px-2 py-1 mb-1">Administration</span>
+          <h2 class="fw-bold text-navy mb-0">Loan Circulation Management</h2>
+          <p class="text-muted small mb-0">Track all borrowed materials, active checkouts, overdue penalties, and process returns</p>
+        </div>
+      </div>
+
+      <!-- Search & Status Filter Controls -->
+      <div class="search-filter-box mb-4">
+        <form action="/loans" method="GET" class="row g-3 align-items-center">
+          <!-- Search Input -->
+          <div class="col-md-6 col-lg-7">
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                name="search"
+                value="<%= searchQuery %>"
+                placeholder="Search by patron name, email, book title or ISBN..."
+              >
+            </div>
+          </div>
+
+          <!-- Status Dropdown -->
+          <div class="col-md-4 col-lg-3">
+            <select class="form-select" name="status" onchange="this.form.submit()">
+              <option value="all" <%= selectedStatus === 'all' ? 'selected' : '' %>>All Statuses</option>
+              <option value="issued" <%= selectedStatus === 'issued' ? 'selected' : '' %>>Active Checkouts</option>
+              <option value="overdue" <%= selectedStatus === 'overdue' ? 'selected' : '' %>>Overdue Only</option>
+              <option value="returned" <%= selectedStatus === 'returned' ? 'selected' : '' %>>Returned Only</option>
+            </select>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-md-2 col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn btn-library-primary w-100">
+              <i class="bi bi-funnel me-1"></i> Filter
+            </button>
+            <% if (searchQuery || (selectedStatus && selectedStatus !== 'all')) { %>
+              <a href="/loans" class="btn btn-outline-secondary" title="Clear Filters">
+                <i class="bi bi-x-circle"></i>
+              </a>
+            <% } %>
+          </div>
+        </form>
+      </div>
+
+      <!-- Loans Table -->
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0 text-navy">Circulation Records (<%= loans.length %>)</h5>
+        </div>
+        <div class="card-body p-0">
+          <% if (loans.length === 0) { %>
+            <div class="p-5 text-center text-muted">
+              <i class="bi bi-file-earmark-text display-4 text-secondary mb-3 d-block"></i>
+              <p class="mb-0">No loan records found matching the current criteria.</p>
+            </div>
+          <% } else { %>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 table-library">
+                <thead>
+                  <tr>
+                    <th scope="col">Book Title</th>
+                    <th scope="col">Borrower / Member</th>
+                    <th scope="col">Issued On</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Return Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Fine (₹5/day)</th>
+                    <th scope="col" class="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% loans.forEach(function(loan) { %>
+                    <tr>
+                      <td>
+                        <% if (loan.book) { %>
+                          <a href="/books/<%= loan.book._id %>" class="fw-bold text-navy text-decoration-none d-block">
+                            <%= loan.book.title %>
+                          </a>
+                          <small class="text-muted"><%= loan.book.author %> &bull; ISBN: <%= loan.book.isbn %></small>
+                        <% } else { %>
+                          <span class="text-danger fw-semibold">Archived / Deleted Book</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (loan.user) { %>
+                          <div class="fw-semibold text-dark"><%= loan.user.name %></div>
+                          <small class="text-muted"><%= loan.user.email %></small>
+                        <% } else { %>
+                          <span class="text-muted">Unknown User</span>
+                        <% } %>
+                      </td>
+                      <td><%= new Date(loan.issueDate).toLocaleDateString('en-GB') %></td>
+                      <td>
+                        <span class="<%= loan.isOverdue ? 'text-danger fw-bold' : '' %>">
+                          <%= new Date(loan.dueDate).toLocaleDateString('en-GB') %>
+                        </span>
+                      </td>
+                      <td>
+                        <%= loan.returnDate ? new Date(loan.returnDate).toLocaleDateString('en-GB') : '<span class="text-muted">-</span>' %>
+                      </td>
+                      <td>
+                        <% if (loan.status === 'returned') { %>
+                          <span class="badge badge-returned">Returned</span>
+                        <% } else if (loan.isOverdue) { %>
+                          <span class="badge badge-overdue">
+                            Overdue (<%= loan.overdueDays %>d)
+                          </span>
+                        <% } else { %>
+                          <span class="badge badge-issued">Issued</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% const displayFine = loan.status === 'returned' ? (loan.fine || 0) : loan.calculatedFine; %>
+                        <% if (displayFine > 0) { %>
+                          <span class="fine-badge">₹<%= displayFine %></span>
+                        <% } else { %>
+                          <span class="text-muted">₹0</span>
+                        <% } %>
+                      </td>
+                      <td class="text-end">
+                        <% if (loan.status !== 'returned') { %>
+                          <form
+                            action="/loans/<%= loan._id %>/return"
+                            method="POST"
+                            class="d-inline confirm-return-form"
+                            data-book-title="<%= loan.book ? loan.book.title : 'this book' %>"
+                          >
+                            <button type="submit" class="btn btn-outline-success btn-sm">
+                              <i class="bi bi-arrow-return-left me-1"></i> Process Return
+                            </button>
+                          </form>
+                        <% } else { %>
+                          <span class="badge bg-light text-secondary border">Closed</span>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

@@ -1,0 +1,166 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-4">
+  <!-- Header Banner -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-4 border-bottom">
+    <div>
+      <h2 class="fw-bold text-navy mb-1">
+        <i class="bi bi-book-half text-primary me-2"></i>Library Book Catalogue
+      </h2>
+      <p class="text-muted small mb-0">Discover, explore, and borrow from our comprehensive educational collection</p>
+    </div>
+    <% if (isLibrarian) { %>
+      <div class="mt-3 mt-md-0">
+        <a href="/books/new" class="btn btn-library-primary">
+          <i class="bi bi-plus-circle me-1"></i> Add New Book
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Search & Category Filters -->
+  <div class="search-filter-box mb-4">
+    <form action="/books" method="GET" class="row g-3 align-items-center">
+      <!-- Search Input -->
+      <div class="col-md-7 col-lg-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+          <input
+            type="text"
+            class="form-control"
+            name="query"
+            value="<%= searchQuery %>"
+            placeholder="Search by title, author, category or ISBN..."
+          >
+        </div>
+      </div>
+
+      <!-- Category Filter Dropdown -->
+      <div class="col-md-3 col-lg-4">
+        <select class="form-select" name="category" onchange="this.form.submit()">
+          <option value="All" <%= selectedCategory === 'All' ? 'selected' : '' %>>All Categories</option>
+          <% categories.forEach(function(cat) { %>
+            <option value="<%= cat %>" <%= selectedCategory === cat ? 'selected' : '' %>><%= cat %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <!-- Submit & Reset Buttons -->
+      <div class="col-md-2 col-lg-2 d-flex gap-2">
+        <button type="submit" class="btn btn-library-primary w-100">
+          <i class="bi bi-filter me-1"></i> Filter
+        </button>
+        <% if (searchQuery || (selectedCategory && selectedCategory !== 'All')) { %>
+          <a href="/books" class="btn btn-outline-secondary" title="Clear Filters">
+            <i class="bi bi-x-circle"></i>
+          </a>
+        <% } %>
+      </div>
+    </form>
+
+    <!-- Category quick pills -->
+    <div class="mt-3 pt-3 border-top">
+      <span class="small text-muted fw-bold me-2">Quick Categories:</span>
+      <a href="/books<%= searchQuery ? '?query=' + encodeURIComponent(searchQuery) + '&category=All' : '' %>" class="category-pill <%= selectedCategory === 'All' ? 'active' : '' %>">
+        All
+      </a>
+      <% categories.forEach(function(cat) { %>
+        <a href="/books?category=<%= encodeURIComponent(cat) %><%= searchQuery ? '&query=' + encodeURIComponent(searchQuery) : '' %>" class="category-pill <%= selectedCategory === cat ? 'active' : '' %>">
+          <%= cat %>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Catalogue Grid -->
+  <% if (books.length === 0) { %>
+    <div class="card border-0 shadow-sm p-5 text-center text-muted">
+      <i class="bi bi-journal-x display-3 text-secondary mb-3"></i>
+      <h4 class="fw-bold">No books found</h4>
+      <p class="mb-3">No titles matched your search query or category filter.</p>
+      <div>
+        <a href="/books" class="btn btn-library-navy">Reset Filters</a>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
+      <% books.forEach(function(book) { %>
+        <div class="col">
+          <div class="book-card">
+            <div class="book-cover-wrap">
+              <img
+                src="<%= book.coverImage || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=600&q=80' %>"
+                alt="<%= book.title %>"
+                class="book-cover-img"
+                loading="lazy"
+              >
+              <span class="book-category-badge"><%= book.category %></span>
+            </div>
+
+            <div class="book-card-body">
+              <h5 class="book-title text-truncate" title="<%= book.title %>"><%= book.title %></h5>
+              <div class="book-author text-truncate mb-2">By <%= book.author %></div>
+
+              <div class="small text-muted mb-2">
+                <span class="fw-semibold">ISBN:</span> <code><%= book.isbn %></code>
+              </div>
+
+              <!-- Stock & Availability status -->
+              <div class="d-flex align-items-center justify-content-between mb-3 mt-auto">
+                <div class="small">
+                  <span class="fw-bold"><%= book.availableCopies %></span>
+                  <span class="text-muted">/ <%= book.totalCopies %> copies</span>
+                </div>
+                <% if (book.availableCopies > 0) { %>
+                  <span class="badge badge-available">
+                    <i class="bi bi-check-circle me-1"></i> Available
+                  </span>
+                <% } else { %>
+                  <span class="badge badge-unavailable">
+                    <i class="bi bi-dash-circle me-1"></i> Currently Unavailable
+                  </span>
+                <% } %>
+              </div>
+
+              <!-- Action Controls -->
+              <div class="d-grid gap-2">
+                <a href="/books/<%= book._id %>" class="btn btn-outline-secondary btn-sm">
+                  <i class="bi bi-info-circle me-1"></i> View Details
+                </a>
+
+                <% if (isAuthenticated && isMember) { %>
+                  <% const isAlreadyBorrowed = userActiveLoanBookIds.includes(book._id.toString()); %>
+                  <% if (isAlreadyBorrowed) { %>
+                    <button class="btn btn-sm btn-light border text-primary" disabled>
+                      <i class="bi bi-check2-all me-1"></i> Already Issued
+                    </button>
+                  <% } else if (memberActiveLoanCount >= 5) { %>
+                    <button class="btn btn-sm btn-light border text-muted" disabled title="Limit of 5 books reached">
+                      <i class="bi bi-slash-circle me-1"></i> Limit Reached (5)
+                    </button>
+                  <% } else if (book.availableCopies > 0) { %>
+                    <form action="/books/<%= book._id %>/issue" method="POST" class="m-0 d-grid">
+                      <button type="submit" class="btn btn-library-primary btn-sm">
+                        <i class="bi bi-journal-arrow-down me-1"></i> Request Issue
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <button class="btn btn-sm btn-light border text-danger" disabled>
+                      <i class="bi bi-x-circle me-1"></i> Currently Unavailable
+                    </button>
+                  <% } %>
+                <% } else if (!isAuthenticated) { %>
+                  <a href="/auth/login" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Login to Borrow
+                  </a>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../layouts/footer') %>

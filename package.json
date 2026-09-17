@@ -1,0 +1,33 @@
+{
+  "name": "library-management-system",
+  "version": "1.0.0",
+  "description": "A full-stack, production-grade Library Management & Book Lending System",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "seed": "node seed.js",
+    "test": "node test/run-tests.js"
+  },
+  "keywords": [
+    "library",
+    "management",
+    "express",
+    "mongodb",
+    "ejs",
+    "mvc"
+  ],
+  "author": "Library System Admin",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.7.0"
+  }
+}

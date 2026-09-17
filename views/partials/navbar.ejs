@@ -1,0 +1,119 @@
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+  <div class="container-fluid px-lg-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <i class="bi bi-journal-bookmark-fill text-warning fs-4"></i>
+      <span>Athenaeum Library</span>
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#mainNavbar"
+      aria-controls="mainNavbar"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/books' ? 'active' : '' %>" href="/books">
+            <i class="bi bi-grid-fill me-1"></i> Catalogue
+          </a>
+        </li>
+
+        <% if (isAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link <%= currentPath === '/dashboard' ? 'active' : '' %>" href="/dashboard">
+              <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+          </li>
+
+          <% if (isMember) { %>
+            <li class="nav-item">
+              <a class="nav-link <%= currentPath === '/loans/my' ? 'active' : '' %>" href="/loans/my">
+                <i class="bi bi-book-half me-1"></i> My Loans
+              </a>
+            </li>
+          <% } %>
+
+          <% if (isLibrarian) { %>
+            <li class="nav-item">
+              <a class="nav-link <%= currentPath === '/books/new' ? 'active' : '' %>" href="/books/new">
+                <i class="bi bi-plus-circle-fill me-1"></i> Add Book
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= currentPath === '/loans' ? 'active' : '' %>" href="/loans">
+                <i class="bi bi-collection-fill me-1"></i> All Loans
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%= currentPath === '/members' ? 'active' : '' %>" href="/members">
+                <i class="bi bi-people-fill me-1"></i> Members
+              </a>
+            </li>
+          <% } %>
+        <% } %>
+      </ul>
+
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <% if (!isAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link <%= currentPath === '/auth/login' ? 'active' : '' %>" href="/auth/login">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Login
+            </a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-outline-light btn-sm px-3 rounded-pill" href="/auth/register">
+              <i class="bi bi-person-plus-fill me-1"></i> Register
+            </a>
+          </li>
+        <% } else { %>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-white"
+              href="#"
+              id="userMenuDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <span class="badge <%= isLibrarian ? 'bg-danger' : 'bg-primary' %> text-uppercase">
+                <%= currentUser.role %>
+              </span>
+              <span class="fw-semibold"><%= currentUser.name %></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenuDropdown">
+              <li class="dropdown-header">
+                <small class="text-muted"><%= currentUser.email %></small>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" href="/dashboard">
+                  <i class="bi bi-person-circle me-2"></i> My Dashboard
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/books">
+                  <i class="bi bi-book me-2"></i> Browse Books
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form action="/auth/logout" method="POST" class="m-0">
+                  <button type="submit" class="dropdown-item text-danger">
+                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>

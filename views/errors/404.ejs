@@ -1,0 +1,27 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-5 text-center">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="card border-0 shadow-sm p-5 rounded-4">
+        <div class="mb-4">
+          <span class="display-1 fw-bold text-primary">404</span>
+          <div class="text-muted fs-4">Page Not Found</div>
+        </div>
+        <p class="text-secondary mb-4">
+          <%= typeof message !== 'undefined' ? message : 'The library resource or page you requested could not be located in our catalog.' %>
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="/books" class="btn btn-library-primary">
+            <i class="bi bi-grid-fill me-1"></i> Browse Catalogue
+          </a>
+          <a href="/" class="btn btn-outline-secondary">
+            <i class="bi bi-house-door me-1"></i> Return Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

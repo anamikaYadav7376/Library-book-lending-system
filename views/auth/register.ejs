@@ -1,0 +1,99 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="form-card">
+        <div class="text-center mb-4">
+          <div class="stat-icon-wrapper bg-success text-white mx-auto mb-3">
+            <i class="bi bi-person-plus-fill"></i>
+          </div>
+          <h3 class="fw-bold text-navy">Member Registration</h3>
+          <p class="text-muted small">Create a free library membership card to borrow books</p>
+        </div>
+
+        <form action="/auth/register" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                value="<%= typeof formData !== 'undefined' && formData.name ? formData.name : '' %>"
+                placeholder="e.g. John Doe"
+                required
+                autofocus
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                value="<%= typeof formData !== 'undefined' && formData.email ? formData.email : '' %>"
+                placeholder="name@university.edu"
+                required
+              >
+            </div>
+            <div class="form-text">Must be a valid, unique email address.</div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  placeholder="Min 6 chars"
+                  required
+                  minlength="6"
+                >
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-check2-circle"></i></span>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Repeat password"
+                  required
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-library-primary py-2 fs-6">
+              <i class="bi bi-person-check me-1"></i> Create Library Account
+            </button>
+          </div>
+        </form>
+
+        <div class="text-center mt-3 pt-3 border-top">
+          <p class="small text-muted mb-0">
+            Already registered? <a href="/auth/login" class="fw-semibold text-decoration-none">Sign in here</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

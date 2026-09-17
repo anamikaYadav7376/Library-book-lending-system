@@ -1,0 +1,49 @@
+<div class="admin-sidebar shadow-sm">
+  <div class="d-flex align-items-center px-2 py-2 mb-3 border-bottom border-secondary">
+    <i class="bi bi-shield-lock-fill text-warning fs-4 me-2"></i>
+    <div>
+      <h6 class="mb-0 text-white fw-bold">Admin Portal</h6>
+      <small class="text-light opacity-75">Library Control</small>
+    </div>
+  </div>
+
+  <div class="sidebar-heading">Navigation</div>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link <%= currentPath === '/dashboard' ? 'active' : '' %>" href="/dashboard">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard Overview</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <%= currentPath === '/books' ? 'active' : '' %>" href="/books">
+        <i class="bi bi-book"></i>
+        <span>Book Catalogue</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <%= currentPath === '/books/new' ? 'active' : '' %>" href="/books/new">
+        <i class="bi bi-plus-circle"></i>
+        <span>Add New Title</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <%= currentPath === '/loans' ? 'active' : '' %>" href="/loans">
+        <i class="bi bi-arrow-left-right"></i>
+        <span>Loan Circulation</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <%= currentPath === '/members' ? 'active' : '' %>" href="/members">
+        <i class="bi bi-people"></i>
+        <span>Member Management</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-heading mt-4">System Info</div>
+  <div class="px-2 py-2 text-secondary small">
+    <p class="mb-1"><i class="bi bi-hdd-network me-1"></i> Mode: <%= process.env.NODE_ENV || 'production' %></p>
+    <p class="mb-0"><i class="bi bi-clock-history me-1"></i> Loan Period: 14 Days</p>
+  </div>
+</div>

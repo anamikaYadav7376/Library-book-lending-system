@@ -1,0 +1,130 @@
+<%- include('../layouts/header') %>
+
+<div class="container-fluid px-0">
+  <div class="row g-0">
+    <!-- Admin Sidebar -->
+    <div class="col-lg-2 d-none d-lg-block">
+      <%- include('../partials/sidebar') %>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="col-lg-10 p-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-4 border-bottom">
+        <div>
+          <span class="badge bg-danger text-uppercase px-2 py-1 mb-1">Administration</span>
+          <h2 class="fw-bold text-navy mb-0">Member Directory & Accounts</h2>
+          <p class="text-muted small mb-0">Manage registered library patrons, active loans and overdue statuses</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+          <span class="badge bg-secondary fs-6 px-3 py-2">
+            <i class="bi bi-people-fill me-1"></i> Total Members: <%= members.length %>
+          </span>
+        </div>
+      </div>
+
+      <!-- Search Box -->
+      <div class="search-filter-box mb-4">
+        <form action="/members" method="GET" class="row g-2 align-items-center">
+          <div class="col-md-9 col-lg-10">
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+              <input
+                type="text"
+                class="form-control"
+                name="search"
+                value="<%= searchQuery %>"
+                placeholder="Search members by name or email address..."
+              >
+            </div>
+          </div>
+          <div class="col-md-3 col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn btn-library-primary w-100">
+              <i class="bi bi-funnel me-1"></i> Search
+            </button>
+            <% if (searchQuery) { %>
+              <a href="/members" class="btn btn-outline-secondary">Reset</a>
+            <% } %>
+          </div>
+        </form>
+      </div>
+
+      <!-- Members Table -->
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+          <% if (members.length === 0) { %>
+            <div class="p-5 text-center text-muted">
+              <i class="bi bi-person-x display-4 text-secondary mb-2 d-block"></i>
+              <p class="mb-0">No library members matched your search criteria.</p>
+            </div>
+          <% } else { %>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 table-library">
+                <thead>
+                  <tr>
+                    <th scope="col">Member</th>
+                    <th scope="col">Email Address</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Joined Date</th>
+                    <th scope="col" class="text-center">Active Loans</th>
+                    <th scope="col" class="text-center">Overdue Loans</th>
+                    <th scope="col" class="text-end">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% members.forEach(function(member) { %>
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="rounded-circle bg-light border text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <%= member.name.charAt(0).toUpperCase() %>
+                          </div>
+                          <span class="fw-bold text-navy"><%= member.name %></span>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="text-muted"><%= member.email %></span>
+                      </td>
+                      <td>
+                        <span class="badge bg-light text-dark border text-uppercase">
+                          <%= member.role %>
+                        </span>
+                      </td>
+                      <td>
+                        <%= new Date(member.createdAt).toLocaleDateString('en-GB') %>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge <%= member.activeLoansCount > 0 ? 'bg-primary' : 'bg-light text-secondary border' %> rounded-pill px-3 py-1">
+                          <%= member.activeLoansCount %> / 5
+                        </span>
+                      </td>
+                      <td class="text-center">
+                        <% if (member.overdueLoansCount > 0) { %>
+                          <span class="badge badge-overdue rounded-pill px-3 py-1">
+                            <%= member.overdueLoansCount %> Overdue
+                          </span>
+                        <% } else { %>
+                          <span class="badge bg-light text-success border rounded-pill px-3 py-1">
+                            <i class="bi bi-check me-1"></i> None
+                          </span>
+                        <% } %>
+                      </td>
+                      <td class="text-end">
+                        <% if (member.overdueLoansCount > 0) { %>
+                          <span class="badge bg-danger">Action Required</span>
+                        <% } else { %>
+                          <span class="badge bg-success">In Good Standing</span>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>
