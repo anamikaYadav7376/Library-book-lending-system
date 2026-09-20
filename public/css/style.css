@@ -103,21 +103,6 @@ h1, h2, h3, h4, h5, h6 {
   color: #ffffff !important;
   font-size: 1.25rem;
 }
-
-.navbar-custom .nav-link {
-  color: #cbd5e1;
-  font-weight: 500;
-  padding: 0.5rem 0.85rem;
-  transition: all 0.2s ease;
-}
-
-.navbar-custom .nav-link:hover,
-.navbar-custom .nav-link.active {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-}
-
 /* Theme Toggle Button */
 .theme-toggle-btn {
   background: rgba(255, 255, 255, 0.1);
@@ -403,22 +388,6 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(245, 158, 11, 0.3);
 }
 
-/* Custom Buttons */
-.btn-library-primary {
-  background-color: var(--accent-teal);
-  color: #ffffff;
-  border: none;
-  font-weight: 600;
-  padding: 0.5rem 1.15rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.btn-library-primary:hover {
-  background-color: var(--accent-teal-hover);
-  color: #ffffff;
-}
-
 .btn-library-navy {
   background-color: #0f172a;
   color: #ffffff;
@@ -552,33 +521,6 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--border-color);
 }
 
-/* Category Pills */
-.category-pill {
-  display: inline-block;
-  padding: 0.4rem 0.9rem;
-  background-color: var(--bg-surface-secondary);
-  color: var(--text-secondary);
-  border-radius: 20px;
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-right: 0.35rem;
-  margin-bottom: 0.35rem;
-  transition: all 0.2s ease;
-}
-
-.category-pill:hover,
-.category-pill.active {
-  background-color: #0f172a;
-  color: #ffffff;
-}
-
-[data-theme="dark"] .category-pill:hover,
-[data-theme="dark"] .category-pill.active {
-  background-color: var(--accent-teal);
-  color: #ffffff;
-}
-
 /* Modal in Dark Mode */
 [data-theme="dark"] .modal-content {
   background-color: var(--card-bg);
@@ -628,4 +570,623 @@ footer.library-footer a:hover {
     border-bottom: 1px solid var(--border-color);
     padding: 1rem;
   }
+}
+
+
+.book-stock-fill {
+  width: var(--stock-width);
+}
+
+/* ==========================================================================
+   CATALOGUE PAGE — Enhanced UI (v2)
+   ========================================================================== */
+
+/* ── Page Header ──────────────────────────────────────────────────────────── */
+.catalogue-header {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.25rem;
+}
+
+.catalogue-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.catalogue-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.catalogue-title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: linear-gradient(135deg, var(--accent-teal), #0891b2);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.catalogue-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.btn-add-book {
+  white-space: nowrap;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.55rem 1.2rem;
+}
+
+/* ── Search Panel ─────────────────────────────────────────────────────────── */
+.catalogue-search-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.catalogue-search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Search text field */
+.catalogue-search-field {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.catalogue-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: 1rem;
+}
+
+.catalogue-search-input {
+  width: 100%;
+  padding: 0.6rem 2.5rem 0.6rem 2.4rem;
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 9px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.catalogue-search-input:focus {
+  outline: none;
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.18);
+}
+
+.catalogue-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.catalogue-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.catalogue-search-clear:hover { color: var(--text-primary); }
+
+/* Category dropdown */
+.catalogue-filter-field {
+  position: relative;
+  flex: 0 1 190px;
+  min-width: 140px;
+}
+
+.catalogue-filter-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: 0.95rem;
+  z-index: 1;
+}
+
+.catalogue-filter-select {
+  width: 100%;
+  padding: 0.6rem 1rem 0.6rem 2.4rem;
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 9px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  appearance: auto;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.catalogue-filter-select:focus {
+  outline: none;
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.18);
+}
+
+/* Action buttons inside search panel */
+.catalogue-search-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.catalogue-btn-search {
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 0.6rem 1.1rem;
+}
+
+.catalogue-btn-clear {
+  background: var(--bg-surface-secondary);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 9px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.catalogue-btn-clear:hover {
+  background: var(--bg-surface-tertiary);
+  color: var(--text-primary);
+}
+
+/* ── Results bar ──────────────────────────────────────────────────────────── */
+.catalogue-results-bar {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.catalogue-results-bar strong { color: var(--text-primary); }
+
+/* ── Empty State ──────────────────────────────────────────────────────────── */
+.catalogue-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.catalogue-empty-icon {
+  font-size: 3.5rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+.catalogue-empty-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.catalogue-empty-msg {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Book Card (enhanced) ─────────────────────────────────────────────────── */
+/* Override the base .book-card with a slightly tighter border-radius */
+.book-card {
+  border-radius: 14px;
+}
+
+/* ── Cover Overlay ────────────────────────────────────────────────────────── */
+.book-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.book-card:hover .book-cover-overlay {
+  opacity: 1;
+}
+
+.book-overlay-cta {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transform: translateY(6px);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.book-card:hover .book-overlay-cta {
+  transform: translateY(0);
+}
+
+.book-overlay-cta:hover {
+  background: var(--accent-teal);
+  color: #ffffff;
+}
+
+/* ── Category Badge (colour-keyed) ───────────────────────────────────────── */
+.book-cat-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 0.22rem 0.55rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  /* default fallback */
+  background: rgba(15, 23, 42, 0.78);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Category colour palette */
+.book-cat-badge.cat-fiction        { background: rgba(124,58,237,0.85); color:#ede9fe; border-color:rgba(167,139,250,0.3); }
+.book-cat-badge.cat-science        { background: rgba(3,105,161,0.85);  color:#e0f2fe; border-color:rgba(56,189,248,0.3); }
+.book-cat-badge.cat-history        { background: rgba(146,64,14,0.85);  color:#fef3c7; border-color:rgba(252,211,77,0.3); }
+.book-cat-badge.cat-biography      { background: rgba(6,95,70,0.85);    color:#d1fae5; border-color:rgba(52,211,153,0.3); }
+.book-cat-badge.cat-technology     { background: rgba(30,58,138,0.85);  color:#e0e7ff; border-color:rgba(129,140,248,0.3); }
+.book-cat-badge.cat-philosophy     { background: rgba(127,29,29,0.85);  color:#fee2e2; border-color:rgba(252,165,165,0.3); }
+.book-cat-badge.cat-psychology     { background: rgba(88,28,135,0.85);  color:#f3e8ff; border-color:rgba(192,132,252,0.3); }
+.book-cat-badge.cat-self-help      { background: rgba(6,78,59,0.85);    color:#d1fae5; border-color:rgba(52,211,153,0.3); }
+.book-cat-badge.cat-economics      { background: rgba(120,53,15,0.85);  color:#fef9c3; border-color:rgba(250,204,21,0.3); }
+.book-cat-badge.cat-political-science { background: rgba(30,64,175,0.85); color:#dbeafe; border-color:rgba(147,197,253,0.3); }
+.book-cat-badge.cat-literature     { background: rgba(134,25,143,0.85); color:#fce7f3; border-color:rgba(244,114,182,0.3); }
+.book-cat-badge.cat-mathematics    { background: rgba(12,74,110,0.85);  color:#e0f2fe; border-color:rgba(56,189,248,0.3); }
+
+/* ── Availability Pill (top-right of cover) ───────────────────────────────── */
+.book-avail-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.22rem 0.55rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid transparent;
+}
+
+.avail-in {
+  background: rgba(20,184,166,0.88);
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.25);
+}
+
+.avail-out {
+  background: rgba(239,68,68,0.85);
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* ── Card Body ────────────────────────────────────────────────────────────── */
+.book-title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-author {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ISBN row */
+.book-isbn-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+.book-isbn-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  background: var(--bg-surface-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.book-isbn-code {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Stock progress bar */
+.book-stock-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.book-stock-track {
+  flex: 1;
+  height: 5px;
+  background: var(--bg-surface-tertiary);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.book-stock-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-teal), #10b981);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.book-stock-fill.stock-empty {
+  background: #ef4444;
+}
+.book-stock-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+/* ── Action Buttons ───────────────────────────────────────────────────────── */
+.book-action-wrap {
+  display: grid;
+}
+
+.book-action-btn {
+  width: 100%;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  text-decoration: none;
+}
+
+/* Borrow — primary teal */
+.book-action-btn.state-borrow {
+  background: linear-gradient(135deg, var(--accent-teal), #0891b2);
+  color: #ffffff;
+}
+.book-action-btn.state-borrow:hover {
+  background: linear-gradient(135deg, var(--accent-teal-hover), #0e7490);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13,148,136,0.35);
+  color: #ffffff;
+}
+
+/* Login to borrow — outlined teal */
+.book-action-btn.state-login {
+  background: transparent;
+  border: 1.5px solid var(--accent-teal);
+  color: var(--accent-teal);
+}
+.book-action-btn.state-login:hover {
+  background: var(--accent-teal);
+  color: #ffffff;
+}
+
+/* View details — subtle */
+.book-action-btn.state-view {
+  background: var(--bg-surface-secondary);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.book-action-btn.state-view:hover {
+  background: var(--bg-surface-tertiary);
+  color: var(--text-primary);
+}
+
+/* Already issued — soft blue */
+.book-action-btn.state-issued {
+  background: #e0e7ff;
+  color: #3730a3;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+[data-theme="dark"] .book-action-btn.state-issued {
+  background: rgba(99,102,241,0.18);
+  color: #a5b4fc;
+}
+
+/* Limit reached — soft orange */
+.book-action-btn.state-limit {
+  background: #fef3c7;
+  color: #92400e;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+[data-theme="dark"] .book-action-btn.state-limit {
+  background: rgba(245,158,11,0.18);
+  color: #fbbf24;
+}
+
+/* Unavailable — soft red */
+.book-action-btn.state-unavailable {
+  background: #fee2e2;
+  color: #991b1b;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+[data-theme="dark"] .book-action-btn.state-unavailable {
+  background: rgba(239,68,68,0.18);
+  color: #f87171;
+}
+
+/* Additional category colours for actual seeded data */
+.book-cat-badge.cat-computer-science  { background: rgba(30,58,138,0.88);  color:#e0e7ff; border-color:rgba(129,140,248,0.3); }
+.book-cat-badge.cat-physics           { background: rgba(12,74,110,0.88);   color:#e0f2fe; border-color:rgba(56,189,248,0.3); }
+.book-cat-badge.cat-self-development  { background: rgba(6,78,59,0.88);     color:#d1fae5; border-color:rgba(52,211,153,0.3); }
+.book-cat-badge.cat-science-fiction   { background: rgba(88,28,135,0.88);   color:#f3e8ff; border-color:rgba(192,132,252,0.3); }
+.book-cat-badge.cat-non-fiction       { background: rgba(120,53,15,0.88);   color:#fef9c3; border-color:rgba(250,204,21,0.3); }
+.book-cat-badge.cat-engineering       { background: rgba(7,89,133,0.88);    color:#e0f2fe; border-color:rgba(56,189,248,0.3); }
+.book-cat-badge.cat-chemistry         { background: rgba(21,128,61,0.88);   color:#d1fae5; border-color:rgba(74,222,128,0.3); }
+.book-cat-badge.cat-biology           { background: rgba(6,95,70,0.88);     color:#d1fae5; border-color:rgba(52,211,153,0.3); }
+.book-cat-badge.cat-business          { background: rgba(133,77,14,0.88);   color:#fef3c7; border-color:rgba(252,211,77,0.3); }
+
+
+/* ==========================================================================
+   GLOBAL DARK MODE & ACCESSIBILITY OVERRIDES (SINGLE CONSOLIDATED BLOCK)
+   ========================================================================== */
+
+[data-theme="dark"] {
+  /* 1. Global Typography & Muted Text */
+  .text-muted,
+  .text-secondary,
+  .text-black-50,
+  p.small,
+  span.small,
+  .auth-subtext {
+    color: var(--text-muted, #94a3b8) !important;
+  }
+
+  /* 2. Cards, Containers, Tables, and List Items */
+  .card,
+  .card-header,
+  .card-body,
+  .card-footer,
+  .list-group-item,
+  .table,
+  .table tr,
+  .table td,
+  .table th {
+    background-color: var(--card-bg, #1e293b) !important;
+    color: var(--text-color, #f8fafc) !important;
+    border-color: var(--border-color, #334155) !important;
+  }
+
+  /* Ensure text inside lists and tables is readable */
+  .list-group-item *,
+  .table * {
+    color: var(--text-color, #f8fafc);
+  }
+
+  .list-group-item .text-muted,
+  .table .text-muted {
+    color: var(--text-muted, #94a3b8) !important;
+  }
+
+  /* 3. Form Inputs, Selects, and Input Groups */
+  .form-control,
+  .form-select {
+    background-color: var(--card-bg, #1e293b) !important;
+    color: var(--text-color, #f8fafc) !important;
+    border-color: var(--border-color, #334155) !important;
+  }
+
+  .form-control::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1;
+  }
+
+  .input-group-text {
+    background-color: var(--border-color, #334155) !important;
+    color: var(--text-color, #f8fafc) !important;
+    border-color: var(--border-color, #334155) !important;
+  }
+
+  /* 4. Badges & Secondary Buttons */
+  .badge.bg-secondary,
+  .badge.bg-light {
+    background-color: var(--border-color, #334155) !important;
+    color: #f8fafc !important;
+  }
+
+  .btn-outline-secondary,
+  .btn-secondary,
+  .btn:disabled {
+    background-color: var(--border-color, #334155) !important;
+    color: var(--text-muted, #94a3b8) !important;
+    border-color: var(--border-color, #334155) !important;
+  }
+
+  .btn-outline-secondary:hover {
+    color: #f8fafc !important;
+  }
+
+  /* 5. Links */
+  a:not(.btn):not(.nav-link):not(.dropdown-item),
+  .auth-link {
+    color: var(--accent-teal, #38bdf8) !important;
+  }
+
+  a:not(.btn):not(.nav-link):not(.dropdown-item):hover,
+  .auth-link:hover {
+    color: var(--accent-teal-hover, #7dd3fc) !important;
+    text-decoration: underline !important;
+  }
+}
+
+
+[data-theme="dark"] .card-footer,
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light {
+  background-color: var(--card-bg, #1e293b) !important;
+  color: var(--text-color, #f8fafc) !important;
+  border-color: var(--border-color, #334155) !important;
 }

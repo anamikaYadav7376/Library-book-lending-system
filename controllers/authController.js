@@ -1,63 +1,71 @@
 const User = require('../models/User');
 
+// GET /auth/signin (The unified landing page)
+const getSignIn = (req, res) => {
+  res.render('auth/signin', {
+    title: 'Sign In - Library Management System'
+  });
+};
+
 // GET /auth/register
 const getRegister = (req, res) => {
+  const roleQuery = req.query.role;
+
+  // If no role query param is passed, redirect to role selection landing page
+  if (!roleQuery) {
+    return res.redirect('/auth/signin');
+  }
+
+  const role = roleQuery === 'staff' ? 'librarian' : 'member';
+
   res.render('auth/register', {
-    title: 'Member Registration - Library Management System',
+    title: `${role === 'librarian' ? 'Staff' : 'Student'} Registration`,
     errors: [],
-    formData: {}
+    formData: {},
+    role
   });
 };
 
 // POST /auth/register
 const postRegister = async (req, res, next) => {
-  const { name, email, password, confirmPassword } = req.body;
+  const { name, email, password, confirmPassword, role } = req.body;
   const errors = [];
+  const assignedRole = role === 'librarian' ? 'librarian' : 'member';
 
-  if (!name || !name.trim()) {
-    errors.push('Name is required');
-  }
-  if (!email || !email.trim()) {
-    errors.push('Email is required');
-  }
+  if (!name || !name.trim()) errors.push('Name is required');
+  if (!email || !email.trim()) errors.push('Email is required');
   if (!password) {
     errors.push('Password is required');
   } else if (password.length < 6) {
     errors.push('Password must be at least 6 characters long');
   }
-  if (password !== confirmPassword) {
-    errors.push('Passwords do not match');
-  }
+  if (password !== confirmPassword) errors.push('Passwords do not match');
 
   if (errors.length > 0) {
     return res.render('auth/register', {
-      title: 'Member Registration - Library Management System',
+      title: `${assignedRole === 'librarian' ? 'Staff' : 'Student'} Registration`,
       errors,
-      formData: { name, email }
+      formData: { name, email },
+      role: assignedRole
     });
   }
 
   try {
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
-      return res.render('auth/register', {
-        title: 'Member Registration - Library Management System',
-        errors: ['An account with this email address already exists'],
-        formData: { name, email }
-      });
+      req.flash('error_msg', 'An account with this email address already exists. Please log in.');
+      return res.redirect('/auth/login');
     }
 
-    // Role is strictly 'member' for public registration
     const user = new User({
       name: name.trim(),
       email: email.toLowerCase().trim(),
       password,
-      role: 'member'
+      role: assignedRole
     });
 
     await user.save();
 
-    // Auto-login newly registered user
     req.session.user = {
       id: user._id,
       name: user.name,
@@ -86,12 +94,8 @@ const postLogin = async (req, res, next) => {
   const { email, password } = req.body;
   const errors = [];
 
-  if (!email || !email.trim()) {
-    errors.push('Please enter your email address');
-  }
-  if (!password) {
-    errors.push('Please enter your password');
-  }
+  if (!email || !email.trim()) errors.push('Please enter your email address');
+  if (!password) errors.push('Please enter your password');
 
   if (errors.length > 0) {
     return res.render('auth/login', {
@@ -120,7 +124,6 @@ const postLogin = async (req, res, next) => {
       });
     }
 
-    // Store user session info
     req.session.user = {
       id: user._id,
       name: user.name,
@@ -135,18 +138,17 @@ const postLogin = async (req, res, next) => {
   }
 };
 
-// POST /auth/logout or GET /auth/logout
+// Logout
 const logout = (req, res) => {
   req.session.destroy((err) => {
-    if (err) {
-      console.error('Session destruction error:', err);
-    }
+    if (err) console.error('Session destruction error:', err);
     res.clearCookie('connect.sid');
     res.redirect('/auth/login');
   });
 };
 
 module.exports = {
+  getSignIn,
   getRegister,
   postRegister,
   getLogin,

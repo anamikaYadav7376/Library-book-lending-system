@@ -3,66 +3,39 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
-      <div class="form-card">
-        <div class="text-center mb-4">
-          <div class="stat-icon-wrapper bg-primary text-white mx-auto mb-3">
-            <i class="bi bi-box-arrow-in-right"></i>
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <h2 class="fw-bold mb-2">Member & Staff Login</h2>
+            <p class="auth-subtext small">Enter your credentials to access your account</p>
           </div>
-          <h3 class="fw-bold text-navy">Member & Staff Login</h3>
-          <p class="text-muted small">Access your library account, borrowed books and loans</p>
-        </div>
 
-        <form action="/auth/login" method="POST">
-          <div class="mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                name="email"
-                value="<%= typeof formData !== 'undefined' && formData.email ? formData.email : '' %>"
-                placeholder="name@university.edu"
-                required
-                autofocus
-              >
+          <form action="/auth/login" method="POST">
+            <div class="mb-3">
+              <label for="email" class="form-label small fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control custom-input" id="email" name="email" placeholder="name@example.com" required>
+              </div>
             </div>
-          </div>
 
-          <div class="mb-4">
-            <label for="password" class="form-label">Password</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-lock"></i></span>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                required
-              >
+            <div class="mb-4">
+              <label for="password" class="form-label small fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" class="form-control custom-input" id="password" name="password" placeholder="Enter your password" required>
+              </div>
             </div>
-          </div>
 
-          <div class="d-grid mb-3">
-            <button type="submit" class="btn btn-library-primary py-2 fs-6">
-              <i class="bi bi-shield-check me-1"></i> Sign In
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mb-3">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
             </button>
+          </form>
+
+          <div class="text-center mt-4">
+            <p class="auth-subtext small mb-1">Don't have an account?</p>
+            <a href="/auth/signin" class="auth-link fw-semibold text-decoration-none">Create an account here</a>
           </div>
-        </form>
-
-        <div class="text-center mt-3 pt-3 border-top">
-          <p class="small text-muted mb-1">Don't have a library card?</p>
-          <a href="/auth/register" class="fw-semibold text-decoration-none">
-            <i class="bi bi-person-plus me-1"></i> Register as a Library Member
-          </a>
-        </div>
-
-        <div class="alert alert-light border mt-4 mb-0 small">
-          <div class="fw-bold text-secondary mb-1"><i class="bi bi-info-circle me-1"></i> Demo Access:</div>
-          <div><strong>Librarian:</strong> <code>admin@library.com</code> / <code>Admin@123</code></div>
-          <div><strong>Member:</strong> <code>member1@library.com</code> / <code>Member@123</code></div>
         </div>
       </div>
     </div>

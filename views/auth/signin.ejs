@@ -1,0 +1,35 @@
+<%- include('../layouts/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4 p-md-5 text-center">
+          <h2 class="fw-bold mb-2">Welcome to Athenaeum</h2>
+          <p class="auth-subtext small mb-4">Select your account type to get started</p>
+
+          <!-- New account section -->
+          <h5 class="fw-bold mb-3">New to Athenaeum?</h5>
+          <div class="d-grid gap-2 mb-4">
+            <a href="/auth/register?role=student" class="btn btn-primary py-2 fw-semibold">
+              <i class="bi bi-mortarboard-fill me-1"></i> Register as Student
+            </a>
+            <a href="/auth/register?role=staff" class="btn btn-outline-secondary py-2 fw-semibold">
+              <i class="bi bi-person-badge-fill me-1"></i> Register as Staff
+            </a>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Existing account link section -->
+          <div class="text-center auth-footer-link">
+            <p class="auth-subtext small mb-1">Already have an account?</p>
+            <a href="/auth/login" class="fw-semibold text-decoration-none auth-link">Log In here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>
